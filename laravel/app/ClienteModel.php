@@ -27,9 +27,9 @@ class ClienteModel extends Model  {
 //    protected $hidden = ['password', 'remember_token'];
 
     public function scopeName($query, $name) {
-        if (trim($name) != "") {
-         return $query->where(\DB::raw('CONCAT(Nombres," ",ApellidoPaterno," ",ApellidoMaterno," ")'),'LIKE', '%'.$name.'%');                           
-        }
+//        if (trim($name)) {
+         return $query->where(\DB::raw('CONCAT(Nombres," ",ApellidoPaterno," ",ApellidoMaterno," ")'),'LIKE', '%'.$name.'% LIMIT 10');                           
+//        }
     }
 }
     

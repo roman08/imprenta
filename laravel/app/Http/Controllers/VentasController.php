@@ -8,8 +8,10 @@ use Imprenta\SucursalModel;
 use Imprenta\ClienteModel;
 use Imprenta\EstadoModel;
 use Imprenta\TipoClienteModel;
+use Imprenta\MaterialModel;
 use Session;
 use Redirect;
+use Response;
 use Imprenta\Http\Controllers\Controller;
 
 class VentasController extends Controller {
@@ -23,10 +25,11 @@ class VentasController extends Controller {
         $fp = array("Formas de Pago" => '–Forma de Pago–', "1" => 'Contado', "2" => 'Tarjeta Debito/Credito', "3" => 'Deposito Bancario');
         $tipocliente = array("0" => '–Tipo Cliente–') + TipoClienteModel::lists('tipoCliente', 'tipoClienteId')->toArray();
         $estado = array("Estados" => '–Estados–') + EstadoModel::lists('Estado', 'EstadoId')->toArray();
-        $clientes = ClienteModel::Name($request->name)->get();
+//        $clientes = ClienteModel::Name($request->name)->get();
         $sucursal = array("0" => '–Sucursal–') + SucursalModel::lists('sucursal', 'sucursalId')->toArray();
-        $acabados = array("Acabados"=>"-Acabados-","Bolsas"=>'Bolsas',"Vulcanizado"=>'Vulcanizado',"Espacio P/Tensar"=>'Espacio P/Tensar','Sin Acabados'=>'Sin Acabados');
-        return view('ventas.index', compact('clientes', 'fp', 'estado', 'tipocliente', 'sucursal','acabados'));
+        $acabados = array("Acabados" => "-Acabados-", "Bolsas" => 'Bolsas', "Vulcanizado" => 'Vulcanizado', "Espacio P/Tensar" => 'Espacio P/Tensar', 'Sin Acabados' => 'Sin Acabados');
+        $material = array("" => "-Material-") + MaterialModel::lists('materialNombre', 'materialId')->toArray();
+        return view('ventas.index', compact('clientes', 'fp', 'estado', 'tipocliente', 'sucursal', 'acabados', 'material'));
     }
 
     /**
@@ -87,6 +90,25 @@ class VentasController extends Controller {
      */
     public function destroy($id) {
         //
+    }
+
+    public function autocomplete(Request $request) {
+        $term = $request->input('name');
+        $data = array();
+        // $queries = ClienteModel::Name($request->name)->get();
+        $queries = \DB::raw("SELECT * FROM Clientes WHERE Nombres  LIKE '%" . $term . "%' LIMIT 10 ");
+//        print_r($queries); 
+        foreach ($queries as $query) {
+//            $cliente[] = ['ClienteId' => $query->ClienteId];
+            $data[] = ['value' => $query->Nombres];
+            print_r($data);
+        }
+        if ($data) {
+            return Response::json($data);
+        } else {
+            $mensaje[] = "No Existe Cliente";
+            return response::json($mensaje);
+        }
     }
 
 }

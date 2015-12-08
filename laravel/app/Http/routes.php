@@ -29,3 +29,5 @@ Route::resource('clientes/tipos','TipoClientesController');
 Route::get('clientes-tipos','TipoClientesController@index');
 Route::get('material-tipo','TipoMaterialController@index');
 Route::resource('ventas','VentasController');
+Route::get('ventas', 'VentasController@autocomplete');
+
